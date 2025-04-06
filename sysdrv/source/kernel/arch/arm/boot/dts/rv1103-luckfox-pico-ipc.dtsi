@@ -56,19 +56,6 @@
 			default-state = "on";
 		};
 	};
-
-	// DHT11
-	dht11_sensor {
-        compatible = "dht11";
-        pinctrl-names = "default";
-        pinctrl-0 = <&gpio1_pc7>;
-
-        dht11@1 {
-            gpios = <&gpio1 RK_PC7 GPIO_ACTIVE_HIGH>;
-            label = "dht11";
-            linux,default-trigger = "humidity";
-        };
-    };
 };
 
 /***************************** AUDIO ********************************/
@@ -310,29 +297,7 @@
 
 
 /***************************** PINCTRL ********************************/
-// SPI
-&spi0 {
-	pinctrl-0 = <&spi0m0_clk &spi0m0_miso &spi0m0_mosi &spi0m0_cs0>;
-	#address-cells = <1>;
-	#size-cells = <0>;
 
-  spidev@0 {
-    compatible = "rockchip,spidev";
-		spi-max-frequency = <50000000>;
-		reg = <0>;
-	};
-  fbtft@0{
-      compatible = "sitronix,st7789v";
-      reg = <0>;
-      spi-max-frequency = <20000000>;
-      fps = <30>;
-      buswidth = <8>;
-      debug = <0x7>;
-      led-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_HIGH>;//BL
-      dc-gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_HIGH>;      //DC
-      reset-gpios = <&gpio1 RK_PC3 GPIO_ACTIVE_LOW>;    //RES
-  };
-};
 // I2C
 &i2c3 {
 	pinctrl-0 = <&i2c3m1_xfer>;
@@ -384,27 +349,4 @@
 };
 &pwm11 {
 	pinctrl-0 = <&pwm11m0_pins &pwm11m1_pins>;
-};
-
-&pinctrl {
-	spi0 {
-		spi0m0_clk: spi0m0-clk {
-			rockchip,pins = <1 RK_PC1 4 &pcfg_pull_none>;
-		};
-		spi0m0_mosi: spi0m0-mosi {
-			rockchip,pins = <1 RK_PC2 6 &pcfg_pull_none>;
-		};
-		spi0m0_miso: spi0m0-miso {
-			rockchip,pins = <1 RK_PC3 6 &pcfg_pull_none>;
-		};
-		spi0m0_cs0: spi0m0-cs0 {
-			rockchip,pins = <1 RK_PC0 4 &pcfg_pull_none>;
-		};
-	};
-
-    gpio1-pc7 {
-        gpio1_pc7:gpio1-pc7 {
-            rockchip,pins = <1 RK_PC7 RK_FUNC_GPIO &pcfg_pull_none>;
-    };
-	};
 };
