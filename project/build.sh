@@ -32,8 +32,6 @@ GLOBAL_FS_TYPE_SUFFIX=_fs_type
 GLOBAL_INITRAMFS_BOOT_NAME=""
 GLOBAL_PARTITIONS=""
 GLOBAL_SDK_VERSION=""
-WIFI_NEW_CONF=${SDK_APP_DIR}/wifi_app/wpa_supplicant_new.conf
-WIFI_CONF=${SDK_APP_DIR}/wifi_app/wpa_supplicant.conf
 BUILDROOT_PATH=${SDK_SYSDRV_DIR}/source/buildroot/buildroot-2023.02.6
 BUILDROOT_CONFIG_FILE=${BUILDROOT_PATH}/.config
 SDK_CONFIG_DIR=${SDK_ROOT_DIR}/config
@@ -625,32 +623,9 @@ function build_check() {
 }
 
 function build_app() {
-	if [ "$RK_ENABLE_WIFI" = "y" ]; then
-		echo "Set Wifi SSID and PASSWD"
-		check_config LF_WIFI_PSK LF_WIFI_SSID || return 0
-		touch $WIFI_NEW_CONF
-		cat >$WIFI_NEW_CONF <<EOF
-ctrl_interface=/var/run/wpa_supplicant
-ap_scan=1
-update_config=1
-
-network={
-	ssid="$LF_WIFI_SSID"
-	psk="$LF_WIFI_PSK"
-	key_mgmt=WPA-PSK
-}
-EOF
-		mv $WIFI_NEW_CONF $WIFI_CONF
-	fi
-
-	check_config RK_APP_TYPE || return 0
-
 	echo "============Start building app============"
-	echo "TARGET_APP_CONFIG=$RK_APP_DEFCONFIG $RK_APP_DEFCONFIG_FRAGMENT $RK_APP_TYPE"
-	echo "========================================="
 
 	build_meta --export --media_dir $RK_PROJECT_PATH_MEDIA # export meta header files
-	#build_meta --export --media_dir $RK_PROJECT_PATH_MEDIA # for rtl8723bs
 	test -d ${SDK_APP_DIR} && make -C ${SDK_APP_DIR}
 
 	finish_build
@@ -1504,12 +1479,6 @@ function __PACKAGE_ROOTFS() {
 	if [ ! -f $rootfs_tarball ]; then
 		msg_error "Build rootfs is not yet complete, packaging cannot proceed!"
 		exit 0
-	fi
-
-	if [ "$RK_BOOT_MEDIUM" == "emmc" ] && [ "$LF_TARGET_ROOTFS" == "ubuntu" ]; then
-		if [ -f $WIFI_CONF ]; then
-			cp $WIFI_CONF $RK_PROJECT_PACKAGE_ROOTFS_DIR/etc
-		fi
 	fi
 
 	if [ "$LF_TARGET_ROOTFS" == "buildroot" ] || [ "$LF_TARGET_ROOTFS" == "busybox" ]; then
