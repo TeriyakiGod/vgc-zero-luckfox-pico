@@ -1,26 +1,31 @@
-# app/Makefile - Mock app for Luckfox Pico SDK
 
-# Output binary (dummy)
-TARGET := dummy_app
+MAKEFILE_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+export LC_ALL=C
+SHELL:=/bin/bash
+MAKE=make
+AT?=@
 
-# Build directory (align with SDK)
-BUILD_DIR ?= $(CURDIR)/../build/app
+################################################################################
+##   Platform Specified  Configuraton
+################################################################################
+include $(MAKEFILE_DIR)/Makefile.param
 
-.PHONY: all clean install
+################################################################################
+##   Public Configuraton
+################################################################################
 
-all: $(BUILD_DIR)/$(TARGET)
+app_src := $(wildcard ./*/Makefile)
+app_src := $(dir $(app_src))
 
-# Create empty binary (no compilation needed)
-$(BUILD_DIR)/$(TARGET):
-	@echo "  MOCK    $(TARGET)"
-	@mkdir -p $(BUILD_DIR)
-	@touch $@
+all: $(pkg-build)
+	$(foreach target,$(app_src),make -C $(target)||exit -1;)
+	$(call MAROC_COPY_PKG_TO_APP_OUTPUT, $(RK_PROJECT_PATH_APP), $(RK_APP_OUTPUT))
+
+distclean: clean
 
 clean:
-	@echo "  CLEAN   $(TARGET)"
-	@rm -f $(BUILD_DIR)/$(TARGET)
+	$(foreach target,$(app_src),make clean -C $(target)||exit -1;)
+	@rm -rf $(RK_APP_OUTPUT)
 
-install: $(BUILD_DIR)/$(TARGET)
-	@echo "  INSTALL $(TARGET)"
-	@mkdir -p $(TARGET_DIR)/usr/bin/
-	@cp $(BUILD_DIR)/$(TARGET) $(TARGET_DIR)/usr/bin/
+info:
+	@$(foreach target,$(app_src),make -C $(target) info||exit 0;)
