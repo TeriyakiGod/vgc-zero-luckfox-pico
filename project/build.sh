@@ -1351,72 +1351,10 @@ function __PACKAGE_RESOURCES() {
 	fi
 
 	_install_dir=$_target_dir/usr
-	_iqfiles_dir=$_install_dir/share/iqfiles
 
-	__COPY_FILES $RK_PROJECT_PATH_SYSDRV/kernel_drv_ko/ $_install_dir/ko
 
 	__COPY_FILES $RK_PROJECT_PATH_APP/bin $_install_dir/bin/
-	__COPY_FILES $RK_PROJECT_PATH_APP/lib $_install_dir/lib/
-	__COPY_FILES $RK_PROJECT_PATH_APP/share $_install_dir/share/
-	__COPY_FILES $RK_PROJECT_PATH_APP/usr $_install_dir/
-	__COPY_FILES $RK_PROJECT_PATH_APP/etc $_install_dir/etc/
-
-	__COPY_FILES $RK_PROJECT_PATH_MEDIA/bin $_install_dir/bin/
-	__COPY_FILES $RK_PROJECT_PATH_MEDIA/lib $_install_dir/lib/
-	__COPY_FILES $RK_PROJECT_PATH_MEDIA/share $_install_dir/share/
-	__COPY_FILES $RK_PROJECT_PATH_MEDIA/usr $_install_dir/
-
-	_avs_calib_install_dir=$_install_dir/share/avs_calib
-	mkdir -p $_avs_calib_install_dir
-	if [ -n "$RK_AVS_CALIB" ]; then
-		IFS=" "
-		for item in $(echo $RK_AVS_CALIB); do
-			_avs_calib_src=$RK_PROJECT_PATH_MEDIA/avs_calib/$item
-			if [ -f "$_avs_calib_src" ]; then
-				if [[ $_avs_calib_src =~ .*pto$ ]]; then
-					cp -rfa $_avs_calib_src $_avs_calib_install_dir/calib_file.pto
-				else
-					cp -rfa $_avs_calib_src $_avs_calib_install_dir/calib_file.xml
-				fi
-			fi
-		done
-		IFS=
-	fi
-
-	if [ -n "$RK_AVS_LUT" ]; then
-		_avs_lut_src=$(find $RK_PROJECT_PATH_MEDIA -name $RK_AVS_LUT)
-		if [ -n "$_avs_lut_src" ]; then
-			_avs_lut_install_dir=$_install_dir/share/middle_lut
-			mkdir -p $_avs_lut_install_dir
-			cp -rfa $_avs_lut_src $_avs_lut_install_dir/
-		fi
-	fi
-
-	mkdir -p $_iqfiles_dir
-	if [ -n "$RK_CAMERA_SENSOR_IQFILES" ]; then
-		IFS=" "
-		for item in $(echo $RK_CAMERA_SENSOR_IQFILES); do
-			if [ -f "$RK_PROJECT_PATH_MEDIA/isp_iqfiles/$item" ]; then
-				cp -rfa $RK_PROJECT_PATH_MEDIA/isp_iqfiles/$item $_iqfiles_dir
-			fi
-		done
-		IFS=
-	else
-		msg_warn "Not found RK_CAMERA_SENSOR_IQFILES on the $(realpath $BOARD_CONFIG), copy all default for emmc, sd-card or nand"
-		if [ "$RK_BOOT_MEDIUM" != "spi_nor" ]; then
-			cp -rfa $RK_PROJECT_PATH_MEDIA/isp_iqfiles/* $_iqfiles_dir
-		fi
-	fi
-
-	if [ -n "$RK_CAMERA_SENSOR_CAC_BIN" ]; then
-		IFS=" "
-		for item in $(echo $RK_CAMERA_SENSOR_CAC_BIN); do
-			if [ -d "$RK_PROJECT_PATH_MEDIA/isp_iqfiles/$item" ]; then
-				cp -rfa $RK_PROJECT_PATH_MEDIA/isp_iqfiles/$item $_iqfiles_dir
-			fi
-		done
-		IFS=
-	fi
+	__COPY_FILES $RK_PROJECT_PATH_APP/games $_install_dir/games/
 }
 
 function __MAKE_MOUNT_SCRIPT() {

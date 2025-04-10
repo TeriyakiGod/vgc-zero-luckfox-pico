@@ -136,8 +136,8 @@
 		rotate = <0>;
 		fps = <30>;
 		debug = <0x7>;
-		width = <128>;
-		height = <128>;
+		width = <130>;
+		height = <131>;
 		led-gpios = <&gpio1 RK_PC4 GPIO_ACTIVE_HIGH>;     //BL
 		dc-gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;      //DC
 		reset-gpios = <&gpio1 RK_PB3 GPIO_ACTIVE_LOW>;    //RES
