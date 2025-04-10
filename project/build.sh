@@ -32,8 +32,6 @@ GLOBAL_FS_TYPE_SUFFIX=_fs_type
 GLOBAL_INITRAMFS_BOOT_NAME=""
 GLOBAL_PARTITIONS=""
 GLOBAL_SDK_VERSION=""
-WIFI_NEW_CONF=${SDK_APP_DIR}/wifi_app/wpa_supplicant_new.conf
-WIFI_CONF=${SDK_APP_DIR}/wifi_app/wpa_supplicant.conf
 BUILDROOT_PATH=${SDK_SYSDRV_DIR}/source/buildroot/buildroot-2023.02.6
 BUILDROOT_CONFIG_FILE=${BUILDROOT_PATH}/.config
 SDK_CONFIG_DIR=${SDK_ROOT_DIR}/config
@@ -625,33 +623,9 @@ function build_check() {
 }
 
 function build_app() {
-	if [ "$RK_ENABLE_WIFI" = "y" ]; then
-		echo "Set Wifi SSID and PASSWD"
-		check_config LF_WIFI_PSK LF_WIFI_SSID || return 0
-		touch $WIFI_NEW_CONF
-		cat >$WIFI_NEW_CONF <<EOF
-ctrl_interface=/var/run/wpa_supplicant
-ap_scan=1
-update_config=1
-
-network={
-	ssid="$LF_WIFI_SSID"
-	psk="$LF_WIFI_PSK"
-	key_mgmt=WPA-PSK
-}
-EOF
-		mv $WIFI_NEW_CONF $WIFI_CONF
-	fi
-
-	check_config RK_APP_TYPE || return 0
-
 	echo "============Start building app============"
-	echo "TARGET_APP_CONFIG=$RK_APP_DEFCONFIG $RK_APP_DEFCONFIG_FRAGMENT $RK_APP_TYPE"
-	echo "========================================="
 
-	build_meta --export --media_dir $RK_PROJECT_PATH_MEDIA # export meta header files
-	#build_meta --export --media_dir $RK_PROJECT_PATH_MEDIA # for rtl8723bs
-	test -d ${SDK_APP_DIR} && make -C ${SDK_APP_DIR}
+	make -C ${SDK_APP_DIR}
 
 	finish_build
 }
@@ -780,13 +754,13 @@ function build_env() {
 	finish_build
 }
 
-function build_media() {
-	echo "============Start building media============"
+# function build_media() {
+# 	echo "============Start building media============"
 
-	make -C ${SDK_MEDIA_DIR}
+# 	make -C ${SDK_MEDIA_DIR}
 
-	finish_build
-}
+# 	finish_build
+# }
 
 function build_driver() {
 	echo "============Start building kernel's drivers============"
@@ -1248,7 +1222,7 @@ function build_all() {
 	echo "============================================"
 
 	build_sysdrv
-	build_media
+	# build_media
 	build_app
 	build_firmware
 
@@ -1377,72 +1351,10 @@ function __PACKAGE_RESOURCES() {
 	fi
 
 	_install_dir=$_target_dir/usr
-	_iqfiles_dir=$_install_dir/share/iqfiles
 
-	__COPY_FILES $RK_PROJECT_PATH_SYSDRV/kernel_drv_ko/ $_install_dir/ko
 
 	__COPY_FILES $RK_PROJECT_PATH_APP/bin $_install_dir/bin/
-	__COPY_FILES $RK_PROJECT_PATH_APP/lib $_install_dir/lib/
-	__COPY_FILES $RK_PROJECT_PATH_APP/share $_install_dir/share/
-	__COPY_FILES $RK_PROJECT_PATH_APP/usr $_install_dir/
-	__COPY_FILES $RK_PROJECT_PATH_APP/etc $_install_dir/etc/
-
-	__COPY_FILES $RK_PROJECT_PATH_MEDIA/bin $_install_dir/bin/
-	__COPY_FILES $RK_PROJECT_PATH_MEDIA/lib $_install_dir/lib/
-	__COPY_FILES $RK_PROJECT_PATH_MEDIA/share $_install_dir/share/
-	__COPY_FILES $RK_PROJECT_PATH_MEDIA/usr $_install_dir/
-
-	_avs_calib_install_dir=$_install_dir/share/avs_calib
-	mkdir -p $_avs_calib_install_dir
-	if [ -n "$RK_AVS_CALIB" ]; then
-		IFS=" "
-		for item in $(echo $RK_AVS_CALIB); do
-			_avs_calib_src=$RK_PROJECT_PATH_MEDIA/avs_calib/$item
-			if [ -f "$_avs_calib_src" ]; then
-				if [[ $_avs_calib_src =~ .*pto$ ]]; then
-					cp -rfa $_avs_calib_src $_avs_calib_install_dir/calib_file.pto
-				else
-					cp -rfa $_avs_calib_src $_avs_calib_install_dir/calib_file.xml
-				fi
-			fi
-		done
-		IFS=
-	fi
-
-	if [ -n "$RK_AVS_LUT" ]; then
-		_avs_lut_src=$(find $RK_PROJECT_PATH_MEDIA -name $RK_AVS_LUT)
-		if [ -n "$_avs_lut_src" ]; then
-			_avs_lut_install_dir=$_install_dir/share/middle_lut
-			mkdir -p $_avs_lut_install_dir
-			cp -rfa $_avs_lut_src $_avs_lut_install_dir/
-		fi
-	fi
-
-	mkdir -p $_iqfiles_dir
-	if [ -n "$RK_CAMERA_SENSOR_IQFILES" ]; then
-		IFS=" "
-		for item in $(echo $RK_CAMERA_SENSOR_IQFILES); do
-			if [ -f "$RK_PROJECT_PATH_MEDIA/isp_iqfiles/$item" ]; then
-				cp -rfa $RK_PROJECT_PATH_MEDIA/isp_iqfiles/$item $_iqfiles_dir
-			fi
-		done
-		IFS=
-	else
-		msg_warn "Not found RK_CAMERA_SENSOR_IQFILES on the $(realpath $BOARD_CONFIG), copy all default for emmc, sd-card or nand"
-		if [ "$RK_BOOT_MEDIUM" != "spi_nor" ]; then
-			cp -rfa $RK_PROJECT_PATH_MEDIA/isp_iqfiles/* $_iqfiles_dir
-		fi
-	fi
-
-	if [ -n "$RK_CAMERA_SENSOR_CAC_BIN" ]; then
-		IFS=" "
-		for item in $(echo $RK_CAMERA_SENSOR_CAC_BIN); do
-			if [ -d "$RK_PROJECT_PATH_MEDIA/isp_iqfiles/$item" ]; then
-				cp -rfa $RK_PROJECT_PATH_MEDIA/isp_iqfiles/$item $_iqfiles_dir
-			fi
-		done
-		IFS=
-	fi
+	__COPY_FILES $RK_PROJECT_PATH_APP/games $_install_dir/games/
 }
 
 function __MAKE_MOUNT_SCRIPT() {
@@ -1504,12 +1416,6 @@ function __PACKAGE_ROOTFS() {
 	if [ ! -f $rootfs_tarball ]; then
 		msg_error "Build rootfs is not yet complete, packaging cannot proceed!"
 		exit 0
-	fi
-
-	if [ "$RK_BOOT_MEDIUM" == "emmc" ] && [ "$LF_TARGET_ROOTFS" == "ubuntu" ]; then
-		if [ -f $WIFI_CONF ]; then
-			cp $WIFI_CONF $RK_PROJECT_PACKAGE_ROOTFS_DIR/etc
-		fi
 	fi
 
 	if [ "$LF_TARGET_ROOTFS" == "buildroot" ] || [ "$LF_TARGET_ROOTFS" == "busybox" ]; then
@@ -2841,7 +2747,7 @@ while [ $# -ne 0 ]; do
 	uboot) option=build_uboot ;;
 	kernel) option=build_kernel ;;
 	rootfs) option=build_rootfs ;;
-	media) option=build_media ;;
+	# media) option=build_media ;;
 	app) option=build_app ;;
 	info) option=build_info ;;
 	tool) option=build_tool ;;

@@ -14,7 +14,7 @@ include $(MAKEFILE_DIR)/Makefile.param
 ##   Public Configuraton
 ################################################################################
 
-app_src := $(wildcard ./*/Makefile ./component/fastboot_server/Makefile)
+app_src := $(wildcard ./*/Makefile)
 app_src := $(dir $(app_src))
 
 all: $(pkg-build)

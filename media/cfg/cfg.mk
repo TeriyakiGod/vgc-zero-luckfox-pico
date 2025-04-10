@@ -69,15 +69,6 @@ export CONFIG_RK_CRYPTO=n
 # Enable alsa-lib
 # export CONFIG_ALSA_LIB=y
 
-# Enable libv4l
-# export CONFIG_LIBV4L=y
-
-##------------------------------------------------
-# Rockchip's avs
-#
-# Enable avs Build
-export CONFIG_RK_AVS=y
-
 #------------------------------------------------
 # Rockchip's auto
 #

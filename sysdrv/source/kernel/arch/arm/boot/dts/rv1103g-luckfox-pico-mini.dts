@@ -52,12 +52,96 @@
 };
 
 /**********SPI**********/
+/{
+
+	/*LCD_BL*/
+	gpio1pc4:gpio1pc4 {
+		compatible = "regulator-fixed";
+		pinctrl-names = "default";
+		pinctrl-0 = <&gpio1_pc4>;
+		regulator-name = "gpio1_pc4";
+		regulator-always-on;
+	};
+
+	/*LCD_DC*/
+    gpio1pb2:gpio1pb2 {
+        compatible = "regulator-fixed";
+        pinctrl-names = "default";
+        pinctrl-0 = <&gpio1_pb2>;
+        regulator-name = "gpio1_pb2";
+        regulator-always-on;
+    };
+
+	/*LCD_RES*/
+    gpio1pb3:gpio1pb3 {
+        compatible = "regulator-fixed";
+        pinctrl-names = "default";
+        pinctrl-0 = <&gpio1_pb3>;
+        regulator-name = "gpio1_pb3";
+        regulator-always-on;
+    };
+};
+
+&pinctrl {
+		/*LCD_BL*/
+	gpio1-pc4 {
+		gpio1_pc4:gpio1-pc4 {
+			rockchip,pins =	<1 RK_PC4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+	/*LCD_DC*/
+    gpio1-pb2 {
+        gpio1_pb2:gpio1-pb2 {
+            rockchip,pins = <1 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
+        };
+    };
+
+	/*LCD_RES*/
+    gpio1-pb3 {
+        gpio1_pb3:gpio1-pb3 {
+            rockchip,pins = <1 RK_PB3 RK_FUNC_GPIO &pcfg_pull_none>;
+        };
+    };
+
+	spi0 {
+		spi0m0_clk: spi0m0-clk {
+			rockchip,pins = <1 RK_PC1 4 &pcfg_pull_none>;
+		};
+		spi0m0_mosi: spi0m0-mosi {
+			rockchip,pins = <1 RK_PC2 6 &pcfg_pull_none>;
+		};
+		// spi0m0_miso: spi0m0-miso {
+		// 	 rockchip,pins = <1 RK_PC3 6 &pcfg_pull_none>;
+		// };
+		spi0m0_cs0: spi0m0-cs0 {
+			rockchip,pins = <1 RK_PC0 4 &pcfg_pull_none>;
+		};
+	};
+};
+
 /* SPI0_M0 */
 &spi0 {
-	status = "disabled";
-	spidev@0 {
-		spi-max-frequency = <50000000>;
-	};
+	status = "okay";
+	pinctrl-names = "default";
+    pinctrl-0 = <&spi0m0_cs0 &spi0m0_clk &spi0m0_mosi>;         
+
+	display@0{			
+		status = "okay";
+		compatible = "sitronix,st7735r";
+		reg = <0>;
+		spi-max-frequency = <40000000>;
+		bgr;
+		buswidth = <8>;
+		rotate = <0>;
+		fps = <30>;
+		debug = <0x7>;
+		width = <130>;
+		height = <131>;
+		led-gpios = <&gpio1 RK_PC4 GPIO_ACTIVE_HIGH>;     //BL
+		dc-gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;      //DC
+		reset-gpios = <&gpio1 RK_PB3 GPIO_ACTIVE_LOW>;    //RES
+  };
 };
 
 /**********I2C**********/

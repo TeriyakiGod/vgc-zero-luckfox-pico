@@ -7,7 +7,7 @@ RK_PROJECT_OUTPUT:=$(MAKE_PARAM_DIR)/../../output/out
 RK_PROJECT_PATH_MEDIA:=$(RK_PROJECT_OUTPUT)/media_out
 endif
 ifneq ($(RK_PROJECT_OUTPUT),)
-RK_APP_PATH_LIB_INCLUDE := $(RK_PROJECT_PATH_MEDIA)
+RK_APP_PATH_LIB_INCLUDE := $(RK_PROJECT_OUTPUT)/rootfs_uclibc_rv1106
 RK_APP_PATH_PC_TOOLS := $(RK_PROJECT_PATH_PC_TOOLS)
 else
 $(info *** build app depend on media libs and header files)
