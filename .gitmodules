@@ -1,0 +1,3 @@
+[submodule "project/app/bitsybox"]
+	path = project/app/bitsybox
+	url = https://github.com/TeriyakiGod/bitsybox
