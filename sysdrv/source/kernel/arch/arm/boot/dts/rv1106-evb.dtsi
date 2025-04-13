@@ -12,6 +12,14 @@
 		label = "keypad";
 		autorepeat;
 
+		reset {
+			label = "Reset";
+			linux,code = <1>; // KEY_ESC
+			gpios = <&gpio1 RK_PC6 GPIO_ACTIVE_LOW>;
+			debounce-interval = <5>;
+			wakeup-source;
+		};
+
 		up {
 			label = "Up";
 			linux,code = <103>; // KEY_UP
