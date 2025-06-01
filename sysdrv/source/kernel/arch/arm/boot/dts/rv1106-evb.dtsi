@@ -31,7 +31,7 @@
 		down {
 			label = "Down";
 			linux,code = <108>; // KEY_DOWN
-			gpios = <&gpio1 RK_PD1 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio1 RK_PD2 GPIO_ACTIVE_LOW>;
 			debounce-interval = <5>;
 			wakeup-source;
 		};
@@ -39,7 +39,7 @@
 		left {
 			label = "Left";
 			linux,code = <105>; // KEY_LEFT
-			gpios = <&gpio1 RK_PD2 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio1 RK_PD3 GPIO_ACTIVE_LOW>;
 			debounce-interval = <5>;
 			wakeup-source;
 		};
@@ -47,7 +47,7 @@
 		right {
 			label = "Right";
 			linux,code = <106>; // KEY_RIGHT
-			gpios = <&gpio1 RK_PD3 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio1 RK_PD1 GPIO_ACTIVE_LOW>;
 			debounce-interval = <5>;
 			wakeup-source;
 		};
