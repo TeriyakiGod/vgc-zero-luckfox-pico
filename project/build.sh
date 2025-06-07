@@ -754,13 +754,13 @@ function build_env() {
 	finish_build
 }
 
-# function build_media() {
-# 	echo "============Start building media============"
+function build_media() {
+	echo "============Start building media============"
 
-# 	make -C ${SDK_MEDIA_DIR}
+	make -C ${SDK_MEDIA_DIR}
 
-# 	finish_build
-# }
+	finish_build
+}
 
 function build_driver() {
 	echo "============Start building kernel's drivers============"
@@ -1222,7 +1222,7 @@ function build_all() {
 	echo "============================================"
 
 	build_sysdrv
-	# build_media
+	build_media
 	build_app
 	build_firmware
 
@@ -2747,7 +2747,7 @@ while [ $# -ne 0 ]; do
 	uboot) option=build_uboot ;;
 	kernel) option=build_kernel ;;
 	rootfs) option=build_rootfs ;;
-	# media) option=build_media ;;
+	media) option=build_media ;;
 	app) option=build_app ;;
 	info) option=build_info ;;
 	tool) option=build_tool ;;
