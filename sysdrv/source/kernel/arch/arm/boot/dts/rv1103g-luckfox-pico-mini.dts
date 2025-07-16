@@ -52,11 +52,6 @@
 };
 
 /{
-	backlight:backlight {
-        compatible = "gpio-backlight";
-        gpios = <&gpio1 RK_PC4 GPIO_ACTIVE_HIGH>;
-        default-on;
-    };
 
 	/*LCD_DC*/
     gpio1pb2:gpio1pb2 {
@@ -115,11 +110,18 @@
 
 	display@0{			
 		status = "okay";
-		compatible = "okaya,rh128128t", "sitronix,st7735r";
+		compatible = "solomon,ssd1351";
 		reg = <0>;
-		spi-max-frequency = <40000000>;
-		rotation = <0>;
-		backlight = &backlight;
+
+		spi-max-frequency = <4500000>;
+        bgr = <0>;
+        bpp = <16>;
+        rotate = <0>;
+        fps = <30>;
+        buswidth = <8>;
+
+		debug = <0>;
+
 		dc-gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_HIGH>;      //DC
 		reset-gpios = <&gpio1 RK_PB3 GPIO_ACTIVE_HIGH>;    //RES
   };
